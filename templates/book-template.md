@@ -2,7 +2,7 @@
 title: Book-Template
 description: Template for book notes
 published: true
-date: 2025-07-10T03:39:02.879Z
+date: 2025-07-10T04:09:55.399Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-10T02:42:03.936Z
@@ -35,6 +35,9 @@ Description.
 ```program
 // code
 ```
+### Theorems & Proofs
+**Theorem Name**
+Proof.
 ### Formulas
 **Formula Name**
 Description.
