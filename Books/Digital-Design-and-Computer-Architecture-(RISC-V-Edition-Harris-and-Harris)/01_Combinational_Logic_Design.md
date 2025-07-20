@@ -2,7 +2,7 @@
 title: 01_Combinational-Logic-Design
 description: 
 published: true
-date: 2025-07-15T05:03:55.922Z
+date: 2025-07-15T22:17:14.560Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-14T04:04:55.779Z
@@ -12,16 +12,39 @@ dateCreated: 2025-07-14T04:04:55.779Z
 ---
 ## Summary
 ---
-> 
+> "A digital circuit is a module with discrete-valued inputs and outputs and a specification describing the function and timing of the module. This chapter has focused on combinational circuits, whose outputs depend only on the current values of the inputs."
 ## 1.0 Introduction
 ---
 ### Key Concepts
-- **Concept Name**:
-  - Subpoint or clarification.
+- **Circuit**:
+  - Network that processes discrete-valued variables.
+- **Combinational Circuit**
+  - Depends only on current input values.
+  - Memoryless.
+- **Sequential Circuit**
+  - Dependent on input sequence.
+  - Memory.
 ### Definitions
-- **Term 1**
-  - Concise explanation of the term.
+- **Element**
+  - Essentially a black box.
+- **Node**
+  - Wire whose voltage conveys discrete-valued variables
+- **Black Box**
+  - Discrete input and output terminals.
+  - Functional specification of relationship between inputs and outputs, usually boolean functions or truth table).
+  - Timing specification describing delay between input to output change.
+  - Contains elements and nodes (internal, input, output).
+- **Impementation**
+  - Logically equivalent circuits.
+- **Bus**
+  - Bundle of multiple signals usually indicated by a forward slash through a wire and optionally a number specifying number of lines.
+- **Combinational Composition**
+  - All elements combinational.
+  - No cyclic paths.
+  - Every node is input or connects to one output terminal.
 ### Visual Aids
+#### Combinational Logic Circuit
+![clc_example.png](/clc_example.png)
 
 ### Related Links
 - [00_From-Zero-to-One](/Books/Digital-Design-and-Computer-Architecture-(RISC-V-Edition-Harris-and-Harris)/00_From-Zero-to-One#h-01-the-art-of-managing-complexity)
@@ -422,126 +445,189 @@ $$
 ## 1.7 Combinational Building Blocks
 ---
 ### Key Concepts
-- **Concept Name**:
-  - Subpoint or clarification.
+- **Multiplexer/MUX**:
+  - Selects output from serveral inputs from select signal.
+- **Lookup Table**
+  - Stores predefined outputs for pre-programmed input combinations.
+  - Can be built with MUX.
+  - MUX lookup table size can be reduced by using one literal in input feed rather than just 1s and 0s. This reduces input size from $2^N$ to $2^{N-1}$.
+  - Can also be built from decoders by combining with OR gates.
+- **Decoder**
+  - Takes N inputs and produces $2^N$ outputs for each possible bit combination from input.
+  - Can be constructed from $2^N$ N-input AND gates for $N:2^N$ decoder.
 ### Definitions
-- **Term 1**
-  - Concise explanation of the term.
-### Algorithms
-**Algorithm Name**
-Description.
-```pseudo
-1. Step 1
-2. Step 2
-3. Step 3
-```
-### Code Snippets
-**Snippet Name**
-Description.
-```program
-// code
-```
-### Theorems & Proofs
-**Theorem Name**
-Proof.
-### Formulas
-**Formula Name**
-Description.
-$$
-Equation
-$$
+- **Select Signal (Control Signal)**
+  - Signal used to choose between multiple output sources.
+- **Hot Output**
+  - Current output from decoder input.
+  - Only one output able to be "hot" at a time.
 ### Visual Aids
-| Header | Header |
+#### 2:1 Multiplexer
+| $S$ | $B_1$ | $B_0$ | $Y$ |
+| - | - | - | - |
+| 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 1 |
+| 0 | 1 | 0 | 0 |
+| 0 | 1 | 1 | 1 |
+| 1 | 0 | 0 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 1 |
+| 1 | 1 | 1 | 1 |
+
+
+![2-1-multiplexer_diagram.drawio.svg](/2-1-multiplexer_diagram.drawio.svg)
+
+![2-1-multiplexer_k-map.drawio.svg](/2-1-multiplexer_k-map.drawio.svg)
+
+$$
+Y = \left(\neg S \wedge D_0 \right) \lor \left(S \wedge D_1 \right)
+$$
+![two-level-logic_2-1-multiplexer.drawio.svg](/two-level-logic_2-1-multiplexer.drawio.svg)
+
+![tristate-buffer_2-1-multiplexer.drawio.svg](/tristate-buffer_2-1-multiplexer.drawio.svg)
+
+#### 4:1 Multiplexer
+![4-1-multiplexer_diagram.drawio.svg](/4-1-multiplexer_diagram.drawio.svg)
+
+![4-1-multiplexer_2-1-multiplexers_diagram.drawio.svg](/4-1-multiplexer_2-1-multiplexers_diagram.drawio.svg)
+
+#### 4:1 Multiplexer Representation Of AND
+| A | B | Y |
+| - | - | - |
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+
+![4-1-multiplexer_and_diagram.drawio.svg](/4-1-multiplexer_and_diagram.drawio.svg)
+
+| A | Y |
 | - | - |
-| Content | Content |
-![Diagram]()
+| 0 | 0 |
+| 1 | B |
+
+
+![24-1-multiplexer_reduced-and_diagram.drawio.svg](/24-1-multiplexer_reduced-and_diagram.drawio.svg)
+
+#### 2:4 Decoder
+| $A_{1:0}$ | $Y_{3:0}$ |
+| - | - |
+| 00 | 0001 |
+| 01 | 0010 |
+| 10 | 0100 |
+| 11 | 1000 |
+
+
+![2-4-decoder.drawio.svg](/2-4-decoder.drawio.svg)
+
+#### 2:4 Decoder Representation Of XNOR
+$$
+Y = \neg\left(A \oplus B \right)
+$$
+![xnor_2-4-decoder.drawio.svg](/xnor_2-4-decoder.drawio.svg)
+
 ### Examples
-**Example Title**
+**Create Lookup Table**
 **Problem:**
-Problem Statement.
+Create a lookup table for $Y = \left(A \wedge \neg B \right) \lor \left(\neg B \wedge \neg C \right) \lor \left(\neg A \wedge B \wedge C \right)$.
+First create the lookup using a 8:1 multiplexer, then reduce the circuit to a 4:1 multiplexer and an inverter.
 **Solution:**
-Solution Statement.
+| A | B | C | Y |
+| - | - | - | - |
+| 0 | 0 | 0 | 1 |
+| 0 | 0 | 1 | 0 |
+| 0 | 1 | 0 | 0 |
+| 0 | 1 | 1 | 1 |
+| 1 | 0 | 0 | 1 |
+| 1 | 0 | 1 | 1 |
+| 1 | 1 | 0 | 0 |
+| 1 | 1 | 1 | 0 |
+
+
+![8-1-multiplexer_example_diagram.drawio.svg](/8-1-multiplexer_example_diagram.drawio.svg)
+
+| A | B | Y |
+| - | - | - |
+| 0 | 0 | $\neg C$ |
+| 0 | 1 | $C$ |
+| 1 | 0 | 1 |
+| 1 | 1 | 0 |
+
+
+![8-1-multiplexer_example-reduced_diagram.drawio.svg](/8-1-multiplexer_example-reduced_diagram.drawio.svg)
 ### Notable Quotes
-> “Notable quote."
-### Common Pitfalls
-- Pitfall 1.
-### Related Links
-- [Link]()
+> “Combinational logic is often grouped into larger building blocks to build more complex systems."
 ### References
-- *Book Title* — Chapter X, Pages Y–Z
-
-- [Author(s), "Paper or Article Title," Journal or Conference Name, Year]() 
-
-- [Related Chapter in This Wiki]()  
-
-- [Official Specification or Standard Document (PDF/URL)]()  
-
-- Class Lecture ([Link]())
+- *Digital Design and Computer Architecture* — Chapter 2, Pages 81–86
 
 
-
-
-
-
-
-
-
-
-## #.# Subsection Title
+## 1.8 Timing
 ---
 ### Key Concepts
-- **Concept Name**:
-  - Subpoint or clarification.
+- **Timing**:
+  - Concerned with circuit runtime.
+- **Timing Diagram**
+  - Portrays transient response from input change.
+- **Delay**
+  - Usually a reference to propogation delay.
+- **Reasons Why $t_{cd}$ Usually Is Not Equal To $t_{pd}$**
+  - Some inputs or outputs have faster response times than others.
+  - Speed influences from chip temperature.
+  - Different rising and falling delays.
+- **Combinational Circuit Time Properties**
+  - Total propogation delay is the sum of propogation delays on critical path.
+  - Total conamination delay is the sum of contamination delays on short path.
+- **Glitch (Hazard)**
+  - Single input transition causes several output transitions.
+  - Typically not an issue if output is not needed while glitch is happening.
+  - Usually happens when change in input results in different prime implication.
 ### Definitions
-- **Term 1**
-  - Concise explanation of the term.
-### Algorithms
-**Algorithm Name**
-Description.
-```pseudo
-1. Step 1
-2. Step 2
-3. Step 3
-```
-### Code Snippets
-**Snippet Name**
-Description.
-```program
-// code
-```
-### Theorems & Proofs
-**Theorem Name**
-Proof.
-### Formulas
-**Formula Name**
-Description.
-$$
-Equation
-$$
+- **Rising Edge**
+  - Signal change from LOW to HIGH.
+- **Falling Edge**
+  - Signal change from HIGH to LOW.
+- **Propogation Delay**
+  - Denoted by $t_{pd}$.
+  - Maximum time for outputs to fully propogate from any input change.
+- **Contamination Delay**
+  - Denoted by $t_{cd}$.
+  - Minimum time for any output to start transitioning from any input change.
+- **Path**
+  - Sequences of nodes passed through from input to output.
+  - The critical path is the path with most cummulative propogation delay.
+  - The short path is the path with least cummulative contamination delay.
+- **Control Critical**
+  - Critical path is from control signal.
+- **Data Critical**
+  - Critical path is from data signal.
 ### Visual Aids
-| Header | Header |
-| - | - |
-| Content | Content |
-![Diagram]()
-### Examples
-**Example Title**
-**Problem:**
-Problem Statement.
-**Solution:**
-Solution Statement.
+#### Buffer Timing Diagram
+![timing_diagram_simple.png](/timing_diagram_simple.png)
+
+![timing_diagram_full.png](/timing_diagram_full.png)
+
+#### Circuit Timing Diagram
+![digital_circuit_example.png](/digital_circuit_example.png)
+
+![digital_circuit_example_prop-delay.png](/digital_circuit_example_prop-delay.png)
+
+![digital_circuit_example_cont-delay.png](/digital_circuit_example_cont-delay.png)
+
+#### Glitch In Circuit
+![glitch_digital_circuit_example.png](/glitch_digital_circuit_example.png)
+
+![glitch_timing_diagram_example.png](/glitch_timing_diagram_example.png)
+
+#### Fixing Glitch For Single Input Variable Change
+![fixed_glitch_k-map.png](/fixed_glitch_k-map.png)
+
+![new_digital_circuit_fixed_glitch.png](/new_digital_circuit_fixed_glitch.png)
+
 ### Notable Quotes
-> “Notable quote."
-### Common Pitfalls
-- Pitfall 1.
-### Related Links
-- [Link]()
+> “The best choice depends not only on the critical path through the circuit and the
+input arrival times but also on the power, cost, and availability of parts."
+
+> "However, simultaneous transitions on multiple inputs can also cause glitches. These glitches cannot be fixed by adding hardware. Because the vast majority of interesting systems have simultaneous (or near-simultaneous) transitions on multiple inputs, glitches are a fact of life in most circuits."
 ### References
-- *Book Title* — Chapter X, Pages Y–Z
-
-- [Author(s), "Paper or Article Title," Journal or Conference Name, Year]() 
-
-- [Related Chapter in This Wiki]()  
-
-- [Official Specification or Standard Document (PDF/URL)]()  
-
-- Class Lecture ([Link]())
+- *Digital Design and Computer Architecture* — Chapter 2, Pages 86–93
