@@ -2,7 +2,7 @@
 title: 03_Hardware-Description-Langauges
 description: 
 published: true
-date: 2025-07-20T03:32:33.027Z
+date: 2025-07-21T15:58:50.548Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-20T03:32:33.027Z
@@ -290,6 +290,216 @@ endmodule
 
 
 ## 3.4 More Combinational Logic
+---
+### Code Snippets
+**Inverter**
+Construct an inverter using an always statement.
+```systemverilog
+module inv(input logic [3:0] a,
+						output logic [3:0] y);
+	always_comb
+		y = ~a;
+endmodule
+```
+**Full-Adder**
+Make a full-adder using always statement.
+```systemverilog
+module fulladder(input logic a, b, cin,
+									output logic s, cout);
+	logic p, g;
+	always_comb
+		begin
+			p = a ^ b; g = a & b; s = p ^ cin; cout = g | (p & cin);
+  	end
+endmodule
+```
+**7-Segment Display Decoder**
+Build a 7-segment display decoder using a case statement.
+```systemverilog
+module sevenseg(input logic [3:0] data,
+									output logic [6:0] segments);
+	always_comb
+	case(data)
+    // abc_defg
+    0: segments = 7'b111_1110;
+    1: segments = 7'b011_0000;
+    2: segments = 7'b110_1101;
+    3: segments = 7'b111_1001;
+    4: segments = 7'b011_0011;
+    5: segments = 7'b101_1011;
+    6: segments = 7'b101_1111;
+    7: segments = 7'b111_0000;
+    8: segments = 7'b111_1111;
+    9: segments = 7'b111_0011;
+    default: segments = 7'b000_0000;
+	endcase
+endmodule
+```
+**3:8 Decoder**
+Construct a 3:8 decoder using case statements.
+```systemverilog
+module decoder3_8(input logic [2:0] a,
+										output logic [7:0] y);
+  always_comb
+    case(a)
+    3'b000: y=8'b00000001;
+    3'b001: y=8'b00000010;
+    3'b010: y=8'b00000100;
+    3'b011: y=8'b00001000;
+    3'b100: y=8'b00010000;
+    3'b101: y=8'b00100000;
+    3'b110: y=8'b01000000;
+    3'b111: y=8'b10000000;
+    default: y=8'bxxxxxxxx;
+  endcase
+endmodule
+```
+**Priority Circuit**
+Build a priority circuit using an if statement and then refine with don't cares.
+```systemverilog
+module priorityckt(input logic [3:0] a,
+										output logic [3:0] y);
+	always_comb
+    if (a[3]) y = 4'b1000;
+    else if (a[2]) y = 4'b0100;
+    else if (a[1]) y = 4'b0010;
+    else if (a[0]) y = 4'b0001;
+    else y = 4'b0000;
+endmodule
+```
+```systemverilog
+module priority_casez(input logic [3:0] a,
+												output logic [3:0] y);
+	always_comb
+  	casez(a)
+      4'b1???: y = 4'b1000;
+      4'b01??: y = 4'b0100;
+      4'b001?: y = 4'b0010;
+      4'b0001: y = 4'b0001;
+      default: y = 4'b0000;
+    endcase
+endmodule
+```
+**Inefficient Full Adder**
+Create a inefficient full adder by using non-blocking statements in an always statement.
+```systemverilog
+// nonblocking assignments (not recommended)
+module fulladder(input logic a, b, cin,
+									output logic s, cout);
+	logic p, g;
+	always_comb
+		begin
+      p <= a ^ b; // nonblocking
+      g <= a & b; // nonblocking
+      s <= p ^ cin;
+      cout <= g | (p & cin);
+		end
+endmodule
+```
+**Inefficient Synchronizer**
+Create an inefficient synchronizer using blocking statements.
+```systemverilog
+// Bad implementation of a synchronizer using blocking
+// assignments
+module syncbad(input logic clk,
+                input logic d,
+                output logic q);
+  logic n1;
+  always_ff @(posedge clk)
+  	begin
+      n1 = d; // blocking
+      q = n1; // blocking
+  	end
+endmodule
+```
+### References
+- *Digital Design and Computer Architecture* — Chapter 4, Pages 196–207
+
+
+## 3.5 Finite State Machines
+---
+### Code Snippets
+**Divide By 3 FSM**
+Construct a divide by 3 FSM.
+```systemverilog
+module divideby3FSM(input logic clk,
+                      input logic reset,
+                      output logic y);
+	typedef enum logic [1:0] {S0, S1, S2} statetype;
+	statetype state, nextstate;
+	// state register
+	always_ff @(posedge clk, posedge reset)
+    if (reset) state <= S0;
+    else state <= nextstate;
+	// next state logic
+	always_comb
+    case (state)
+      S0: nextstate = S1;
+      S1: nextstate = S2;
+      S2: nextstate = S0;
+      default: nextstate = S0;
+    endcase
+	// output logic
+	assign y = (state = = S0);
+endmodule
+```
+**Pattern Recongizer FSM**
+Construct a pattern recongizer FSM using both Moore and Mealy.
+```systemverilog
+module patternMoore(input logic clk,
+                      input logic reset,
+                      input logic a,
+                      output logic y);
+	typedef enum logic [1:0] {S0, S1, S2} statetype;
+	statetype state, nextstate;
+	// state register
+	always_ff @(posedge clk, posedge reset)
+    if (reset) state <= S0;
+    else state <= nextstate;
+	// next state logic
+	always_comb
+    case (state)
+      S0: if (a) nextstate = S0;
+      else nextstate = S1;
+      S1: if (a) nextstate = S2;
+      else nextstate = S1;
+      S2: if (a) nextstate = S0;
+      else nextstate = S1;
+      default: nextstate = S0;
+    endcase
+	// output logic
+	assign y = (state == S2);
+endmodule
+```
+```systemverilog
+module patternMealy(input logic clk,
+                      input logic reset,
+                      input logic a,
+                      output logic y);
+	typedef enum logic {S0, S1} statetype;
+	statetype state, nextstate;
+	// state register
+	always_ff @(posedge clk, posedge reset)
+    if (reset) state <= S0;
+    else state <= nextstate;
+	// next state logic
+	always_comb
+    case (state)
+      S0: if (a) nextstate = S0;
+      else nextstate = S1;
+      S1: if (a) nextstate = S0;
+      else nextstate = S1;
+      default: nextstate = S0;
+    endcase
+	// output logic
+	assign y = (a & state == S1);
+endmodule
+```
+### References
+- *Digital Design and Computer Architecture* — Chapter 4, Pages 207–211
+
+
+## 3.6 Data Types
 ---
 ### Key Concepts
 - **Concept Name**:
